@@ -2,17 +2,21 @@ import React from 'react';
 import { View, Button, Text, StyleSheet } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-const FirstScreen = ({ navigation }) => {
+const FirstScreen = ({ navigation, setGallery, gallery }) => {
     const handleImageProcess = (imageUri) => {
-        navigation.navigate('Processed', { imageUri }); // "Processed" SecondScreen'e denk geliyor
+        navigation.navigate('Processed', { imageUri });
     };
+
     const pickImage = () => {
         launchImageLibrary({ mediaType: 'photo' }, (response) => {
             if (response.assets && response.assets.length > 0) {
                 const image = response.assets[0];
                 console.log('Selected Image URI:', image.uri);
 
-                // Fotoğrafı seçtikten sonra SecondScreen'e yönlendir
+                // Fotoğrafı galeriye ekle
+                setGallery([...gallery, { uri: image.uri, date: new Date().toISOString() }]);
+
+                // SecondScreen'e yönlendir
                 handleImageProcess(image.uri);
             } else if (response.didCancel) {
                 console.warn('Kullanıcı seçim işlemini iptal etti.');

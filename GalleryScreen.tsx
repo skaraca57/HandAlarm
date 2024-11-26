@@ -1,18 +1,19 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { View, FlatList, Text, StyleSheet, Image } from 'react-native';
 
+// Fotoğraf objesi için tür tanımı
 interface Photo {
-    id: string;
     uri: string;
     date: string;
 }
 
-const GalleryScreen: React.FC = () => {
-    const [photos, setPhotos] = useState<Photo[]>([
-        { id: '1', uri: 'photo1.jpg', date: '2024-11-25' },
-        { id: '2', uri: 'photo2.jpg', date: '2024-11-26' },
-    ]);
+// GalleryScreen'in prop'ları için tür tanımı
+interface GalleryScreenProps {
+    gallery: Photo[];
+}
 
+const GalleryScreen: React.FC<GalleryScreenProps> = ({ gallery }) => {
+    // FlatList'teki her bir öğe için tür tanımı
     const renderPhoto = ({ item }: { item: Photo }) => (
         <View style={styles.photoContainer}>
             <Image source={{ uri: item.uri }} style={styles.photo} />
@@ -23,8 +24,8 @@ const GalleryScreen: React.FC = () => {
     return (
         <View style={styles.container}>
             <FlatList
-                data={photos}
-                keyExtractor={(item) => item.id}
+                data={[...gallery].reverse()} //
+                keyExtractor={(item, index) => index.toString()}
                 renderItem={renderPhoto}
             />
         </View>

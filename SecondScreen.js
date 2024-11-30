@@ -1,10 +1,12 @@
+// SecondScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Image, Text, StyleSheet, ScrollView, Alert, Button } from 'react-native';
 import RNFS from 'react-native-fs';
 
-const SecondScreen = ({ route }) => {
+const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
     const { imageUri } = route.params || {};
     const [detectedText, setDetectedText] = useState('');
+    const [alarms, setAlarms] = useState([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -13,13 +15,10 @@ const SecondScreen = ({ route }) => {
         }
     }, [imageUri]);
 
-    const processImage = async uri => {
+    const processImage = async (uri) => {
         try {
-            console.log('Processing Image URI:', uri);
             const base64Image = await RNFS.readFile(uri, 'base64');
-            console.log('Base64 Image:', base64Image);
-
-            const apiKey = 'AIzaSyDhJ5ywN5psJLw27O8LChB1oyVx0XCbzhY'; // Google API anahtarınızı buraya yazın
+            const apiKey = 'AIzaSyDhJ5ywN5psJLw27O8LChB1oyVx0XCbzhY'; // Replace with your actual API key
             const body = {
                 requests: [
                     {
@@ -39,49 +38,59 @@ const SecondScreen = ({ route }) => {
             );
 
             const result = await response.json();
-            console.log('Result:', result);
-            const text = result.responses[0]?.fullTextAnnotation?.text || 'Metin bulunamadı.';
+            const text = result.responses[0]?.fullTextAnnotation?.text || 'No text found.';
             setDetectedText(text);
         } catch (error) {
-            console.error('Error during text recognition:', error);
-            setDetectedText('Bir hata oluştu.');
+            console.error('Error:', error);
+            setDetectedText('An error occurred.');
         } finally {
             setLoading(false);
         }
     };
 
+    const validateAndExtract = (text) => {
+        // Regex that ignores spaces and possible separators
+        const regex = /^\s*(.+?)\s*[\/|\-]?\s*(\d{1,2}[:\.]\d{2})\s*[\/|\-]?\s*(\d{2}\.\d{2}\.\d{4})\s*$/;
+        const match = text.match(regex);
+
+        if (match) {
+            return {
+                job: match[1].trim(),
+                time: match[2].trim(),
+                date: match[3].trim(),
+            };
+        }
+        return null;
+    };
+
+    const addAlarm = () => {
+        const alarmData = validateAndExtract(detectedText);
+
+        if (alarmData) {
+            setGallery((prev) => [...prev, { uri: imageUri, date: new Date().toISOString() }]);
+            setAlarms((prev) => [...prev, alarmData]);
+            Alert.alert('Alarm Set', `${alarmData.job} - ${alarmData.time} - ${alarmData.date}`);
+            navigation.navigate('Agenda', { alarms: [...alarms, alarmData] });
+        } else {
+            Alert.alert(
+                'Invalid Format',
+                'Text format is not suitable! Example: Exercise / 20:00 / 26.11.2024'
+            );
+        }
+    };
+
     return (
         <ScrollView contentContainerStyle={styles.container}>
-            <Text style={styles.title}>Seçilen Resim:</Text>
             {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-            <Text style={styles.title}>Tanınan Metin:</Text>
-            {loading ? <Text>Yükleniyor...</Text> : <Text style={styles.result}>{detectedText}</Text>}
+            {loading ? <Text>Loading...</Text> : <Text>{detectedText}</Text>}
+            <Button title="Set Alarm" onPress={addAlarm} />
         </ScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flexGrow: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        padding: 16,
-    },
-    title: {
-        fontSize: 18,
-        marginBottom: 10,
-    },
-    image: {
-        width: 200,
-        height: 200,
-        marginBottom: 20,
-    },
-    result: {
-        fontSize: 16,
-        marginTop: 10,
-        textAlign: 'center',
-        color: 'black',
-    },
+    container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
+    image: { width: 200, height: 200, marginBottom: 16 },
 });
 
 export default SecondScreen;

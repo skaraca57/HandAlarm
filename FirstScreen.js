@@ -1,10 +1,11 @@
+// FirstScreen.js
 import React from 'react';
 import { View, Button, Text, StyleSheet } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-const FirstScreen = ({ navigation, setGallery, gallery }) => {
+const FirstScreen = ({ navigation }) => {
     const handleImageProcess = (imageUri) => {
-        navigation.navigate('Processed', { imageUri });
+        navigation.navigate('Processed', { imageUri }); // "Processed" corresponds to SecondScreen
     };
 
     const pickImage = () => {
@@ -13,23 +14,20 @@ const FirstScreen = ({ navigation, setGallery, gallery }) => {
                 const image = response.assets[0];
                 console.log('Selected Image URI:', image.uri);
 
-                // Fotoğrafı galeriye ekle
-                setGallery([...gallery, { uri: image.uri, date: new Date().toISOString() }]);
-
-                // SecondScreen'e yönlendir
+                // After selecting the photo, navigate to SecondScreen
                 handleImageProcess(image.uri);
             } else if (response.didCancel) {
-                console.warn('Kullanıcı seçim işlemini iptal etti.');
+                console.warn('User canceled the selection process.');
             } else if (response.errorCode) {
-                console.error('Fotoğraf seçme hatası:', response.errorMessage);
+                console.error('Error selecting photo:', response.errorMessage);
             }
         });
     };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Resim Seç ve Tanı</Text>
-            <Button title="Resim Seç" onPress={pickImage} />
+            <Text style={styles.title}>Select and Recognize Image</Text>
+            <Button title="Select Image" onPress={pickImage} />
         </View>
     );
 };

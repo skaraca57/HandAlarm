@@ -1,24 +1,27 @@
-import React, { useState } from 'react';
+// AgendaScreen.tsx
+import React, { useState, useEffect } from 'react';
 import { View, FlatList, Text, StyleSheet } from 'react-native';
+import { RouteProp } from '@react-navigation/native';
+import { TabParamList, Alarm } from './navigationTypes';
 
-interface Alarm {
-    id: string;
-    job: string;
-    time: string;
-    date: string;
+type AgendaScreenRouteProp = RouteProp<TabParamList, 'Agenda'>;
+
+interface Props {
+    route: AgendaScreenRouteProp;
 }
 
-const AgendaScreen: React.FC = () => {
-    const [alarms, setAlarms] = useState<Alarm[]>([
-        { id: '1', job: 'Spor', time: '20:00', date: '2024-11-26' },
-        { id: '2', job: 'Toplantı', time: '14:30', date: '2024-11-27' },
-    ]);
+const AgendaScreen: React.FC<Props> = ({ route }) => {
+    const [alarms, setAlarms] = useState<Alarm[]>(route.params?.alarms || []);
+
+    useEffect(() => {
+        if (route.params?.alarms) {
+            setAlarms(route.params.alarms);
+        }
+    }, [route.params]);
 
     const renderAlarm = ({ item }: { item: Alarm }) => (
         <View style={styles.alarmContainer}>
-            <Text style={styles.alarmText}>
-                {item.job} - {item.time} - {item.date}
-            </Text>
+            <Text style={styles.alarmText}>{`${item.job} - ${item.time} - ${item.date}`}</Text>
         </View>
     );
 
@@ -26,7 +29,7 @@ const AgendaScreen: React.FC = () => {
         <View style={styles.container}>
             <FlatList
                 data={alarms}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item, index) => index.toString()}
                 renderItem={renderAlarm}
             />
         </View>

@@ -1,22 +1,47 @@
+// GalleryScreen.tsx
 import React from 'react';
-import { View, FlatList, Text, StyleSheet, Image } from 'react-native';
+import {
+    View,
+    FlatList,
+    Text,
+    StyleSheet,
+    Image,
+    TouchableOpacity,
+    Alert,
+} from 'react-native';
+import { Photo } from './navigationTypes';
 
-// Fotoğraf objesi için tür tanımı
-interface Photo {
-    uri: string;
-    date: string;
-}
-
-// GalleryScreen'in prop'ları için tür tanımı
 interface GalleryScreenProps {
     gallery: Photo[];
+    setGallery: React.Dispatch<React.SetStateAction<Photo[]>>;
 }
 
-const GalleryScreen: React.FC<GalleryScreenProps> = ({ gallery }) => {
-    // FlatList'teki her bir öğe için tür tanımı
-    const renderPhoto = ({ item }: { item: Photo }) => (
+const GalleryScreen: React.FC<GalleryScreenProps> = ({ gallery, setGallery }) => {
+    const deletePhoto = (index: number) => {
+        Alert.alert(
+            'Delete Photo',
+            'Are you sure you want to delete this photo?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => {
+                        const updatedGallery = [...gallery];
+                        updatedGallery.splice(index, 1);
+                        setGallery(updatedGallery);
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
+
+    const renderPhoto = ({ item, index }: { item: Photo; index: number }) => (
         <View style={styles.photoContainer}>
-            <Image source={{ uri: item.uri }} style={styles.photo} />
+            <TouchableOpacity onLongPress={() => deletePhoto(index)}>
+                <Image source={{ uri: item.uri }} style={styles.photo} />
+            </TouchableOpacity>
             <Text style={styles.date}>{item.date}</Text>
         </View>
     );
@@ -24,7 +49,7 @@ const GalleryScreen: React.FC<GalleryScreenProps> = ({ gallery }) => {
     return (
         <View style={styles.container}>
             <FlatList
-                data={[...gallery].reverse()} //
+                data={[...gallery].reverse()}
                 keyExtractor={(item, index) => index.toString()}
                 renderItem={renderPhoto}
             />

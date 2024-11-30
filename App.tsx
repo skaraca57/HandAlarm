@@ -5,16 +5,14 @@ import FirstScreen from './FirstScreen';
 import SecondScreen from './SecondScreen';
 import GalleryScreen from './GalleryScreen';
 import AgendaScreen from './AgendaScreen';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { saveGallery, loadGallery } from './storageHelper';
+import { TabParamList, Alarm, Photo } from './navigationTypes';
+
+const Tab = createMaterialTopTabNavigator<TabParamList>();
 
 
-
-
-const Tab = createMaterialTopTabNavigator();
-
-const App = () => {
-  const [gallery, setGallery] = useState([]); // Global galeri state'i
+const App: React.FC = () => {
+  const [gallery, setGallery] = useState<Photo[]>([]);
 
   useEffect(() => {
     const fetchGallery = async () => {
@@ -24,21 +22,31 @@ const App = () => {
     fetchGallery();
   }, []);
 
-  // Galeri Değiştiğinde AsyncStorage'e Kaydet
   useEffect(() => {
     saveGallery(gallery);
   }, [gallery]);
+
   return (
     <NavigationContainer>
       <Tab.Navigator>
-        <Tab.Screen name="Upload">
-          {(props) => <FirstScreen {...props} setGallery={setGallery} gallery={gallery} />}
-        </Tab.Screen>
-        <Tab.Screen name="Processed" component={SecondScreen} />
-        <Tab.Screen name="Gallery">
-          {(props) => <GalleryScreen {...props} gallery={gallery} />}
-        </Tab.Screen>
-        <Tab.Screen name="Agenda" component={AgendaScreen} />
+        <Tab.Screen name="Upload" component={FirstScreen} />
+        <Tab.Screen
+          name="Processed"
+          children={(props) => (
+            <SecondScreen {...props} setGallery={setGallery} gallery={gallery} />
+          )}
+        />
+        <Tab.Screen
+          name="Gallery"
+          children={(props) => (
+            <GalleryScreen {...props} gallery={gallery} setGallery={setGallery} />
+          )}
+        />
+        <Tab.Screen
+          name="Agenda"
+          component={AgendaScreen}
+          initialParams={{ alarms: [] }} // Provide initial alarms
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );

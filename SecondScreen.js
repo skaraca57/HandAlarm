@@ -1,6 +1,6 @@
 // SecondScreen.js
 import React, { useEffect, useState } from 'react';
-import { View, Image, Text, StyleSheet, ScrollView, Alert, Button } from 'react-native';
+import { View, Image, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, ImageBackground } from 'react-native';
 import RNFS from 'react-native-fs';
 
 const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
@@ -80,17 +80,77 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
     };
 
     return (
+        <ImageBackground
+        source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-120605.jpg' }} // Background görsel URL
+        style={styles.background}
+    >
         <ScrollView contentContainerStyle={styles.container}>
             {imageUri && <Image source={{ uri: imageUri }} style={styles.image} />}
-            {loading ? <Text>Loading...</Text> : <Text>{detectedText}</Text>}
-            <Button title="Set Alarm" onPress={addAlarm} />
+            <View style={styles.textContainer}>
+                {loading ? (
+                    <Text style={styles.loadingText}>Loading...</Text>
+                ) : (
+                    <Text style={styles.detectedText}>{detectedText}</Text>
+                )}
+            </View>
+            <TouchableOpacity style={styles.button} onPress={addAlarm}>
+                <Text style={styles.buttonText}>Set Alarm</Text>
+            </TouchableOpacity>
         </ScrollView>
-    );
+    </ImageBackground>
+);
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 16 },
-    image: { width: 200, height: 200, marginBottom: 16 },
+    background: {
+        flex: 1,
+        resizeMode: 'cover', // Görsel ekranı kaplar
+    },
+    container: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Arka plana hafif karartma efekti
+        padding: 16,
+    },
+    image: {
+        width: 200,
+        height: 200,
+        marginBottom: 16,
+        borderRadius: 10, // Görselin kenarlarına yuvarlaklık
+    },
+    textContainer: {
+        marginBottom: 20,
+        alignItems: 'center',
+    },
+    loadingText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#FFFDD0', // Krem rengi
+        textAlign: 'center',
+    },
+    detectedText: {
+        fontSize: 16,
+        fontWeight: 'normal',
+        color: '#FFFDD0', // Krem rengi
+        textAlign: 'center',
+    },
+    button: {
+        backgroundColor: '#7E4100FF', // Buton rengi
+        paddingVertical: 15,
+        paddingHorizontal: 40,
+        borderRadius: 30, // Yuvarlatılmış kenarlar
+        shadowColor: '#000', // Gölge efekti
+        shadowOffset: { width: 0, height: 5 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 5,
+    },
+    buttonText: {
+        color: '#FFFDD0', // Krem rengi
+        fontSize: 20,
+        fontWeight: 'bold',
+    },
 });
 
 export default SecondScreen;

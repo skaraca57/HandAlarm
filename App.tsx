@@ -7,43 +7,112 @@ import GalleryScreen from './GalleryScreen';
 import AgendaScreen from './AgendaScreen';
 import { saveGallery, loadGallery } from './storageHelper';
 import { TabParamList, Alarm, Photo } from './navigationTypes';
+import PushNotification from 'react-native-push-notification';
+import { Platform, PermissionsAndroid, Alert } from 'react-native';
+
+
 
 const Tab = createMaterialTopTabNavigator<TabParamList>();
 
 
 const App: React.FC = () => {
-  // State: Galerideki fotoğrafları saklamak için
-  const [gallery, setGallery] = useState<Photo[]>([]);
 
-  // İlk başlatıldığında galeriyi yükle
+  const [gallery, setGallery] = React.useState<Photo[]>([]);
+
   useEffect(() => {
+
+  })
+
+
+
+  // Uygulama başladığında çalıştırılacak işlemler
+  useEffect(() => {
+    // Depolanan galeriyi yükleme
     const fetchGallery = async () => {
-      const savedGallery = await loadGallery(); // storage'den galeriyi yükle
-      setGallery(savedGallery); // State'e kaydet
+      const savedGallery = await loadGallery();
+      setGallery(savedGallery);
     };
     fetchGallery();
-  }, []); // Bu sadece ilk başlatıldığında çalışır.
 
-  // Galeride bir değişiklik olduğunda otomatik olarak storage'e kaydet
+    // Bildirim kanalı oluşturma (App başlatıldığında bir kez)
+    PushNotification.createChannel(
+      {
+        channelId: 'test-alarm-channel',
+        channelName: 'Special Notifications',
+        channelDescription: 'A channel for special notifications',
+        importance: 4,
+        vibrate: true,
+        playSound: true, // Ses çalma
+        soundName: 'default', // Varsayılan alarm sesi
+      },
+      (created) => console.log(`Channel created or already exists: ${created}`)
+    );
+
+
+    const requestNotificationPermission = async () => {
+      if (Platform.OS === 'android' && Platform.Version >= 33) {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS
+        );
+
+        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+          Alert.alert('Permission Denied', 'You need to enable notification permissions from settings.');
+          return false;
+        }
+      }
+      return true;
+    };
+    const checkPermissions = async () => {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        console.log("Notification permission not granted.");
+      }
+    };
+    checkPermissions();
+  }, []);
+
+  // Galeri güncellemelerini depolama
   useEffect(() => {
-    saveGallery(gallery); // storageHelper fonksiyonu
+    saveGallery(gallery);
   }, [gallery]);
 
+
+  useEffect(() => {
+    PushNotification.channelExists('specialid', (exists) => {
+      if (!exists) {
+        PushNotification.createChannel(
+          {
+            channelId: 'specialid',
+            channelName: 'Special Notifications',
+            channelDescription: 'A channel for special notifications',
+            importance: 4,
+            vibrate: true,
+          },
+          (created) => console.log(`Channel created: ${created}`)
+        );
+      } else {
+        console.log('Channel already exists');
+      }
+    });
+  }, []);
+
+
+
   return (
-   <NavigationContainer>
+    <NavigationContainer>
       {/* Sekme Navigasyonu Başlıyor */}
       <Tab.Navigator
         screenOptions={{
           // Sekme Tasarımı
-          tabBarStyle: { 
+          tabBarStyle: {
             backgroundColor: '#FFFDD0', // Çubuğun arka plan rengi
             height: 50, // Çubuğun yüksekliği artırıldı
             justifyContent: 'center', // İçeriği ortalamak için
           }, // Sekme çubuğu koyu gri
-          tabBarLabelStyle: { 
+          tabBarLabelStyle: {
             fontSize: 15, // Yazı boyutunu büyüttük
-            fontWeight: 'bold', 
-            color: '#7E4100FF', 
+            fontWeight: 'bold',
+            color: '#7E4100FF',
             textAlign: 'center', // Metni ortaladık
           }, // Sekme yazıları
           tabBarIndicatorStyle: { backgroundColor: '#7E4100FF', height: 3 }, // Aktif sekme alt çizgisi

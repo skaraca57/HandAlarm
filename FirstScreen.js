@@ -1,6 +1,6 @@
 // FirstScreen.js
 import React from 'react';
-import { View, Button, Text, StyleSheet,TouchableOpacity,ImageBackground, } from 'react-native';
+import { View, Button, Text, StyleSheet, TouchableOpacity, ImageBackground, } from 'react-native';
 import { launchImageLibrary } from 'react-native-image-picker';
 
 const FirstScreen = ({ navigation }) => {
@@ -26,23 +26,23 @@ const FirstScreen = ({ navigation }) => {
 
     return (
         <ImageBackground
-        source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-120981.jpg' }} // Buraya istediğin bir görsel URL'sini koyabilirsin
-        style={styles.background}
-    >
-        <View style={styles.container}>
-            <Text style={styles.title}>Select and Recognize Image</Text>
-            {/* YENİ: TouchableOpacity ile özel bir buton tasarımı yapıldı */}
-            <TouchableOpacity style={styles.button} onPress={pickImage}>
-                <Text style={styles.buttonText}>Select Image</Text>
-            </TouchableOpacity>
-        </View>
-    </ImageBackground>
+            source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-120981.jpg' }} // Buraya istediğin bir görsel URL'sini koyabilirsin
+            style={styles.background}
+        >
+            <View style={styles.container}>
+                <Text style={styles.title}>Select and Recognize Image</Text>
+                {/* YENİ: TouchableOpacity ile özel bir buton tasarımı yapıldı */}
+                <TouchableOpacity style={styles.button} onPress={pickImage}>
+                    <Text style={styles.buttonText}>Select Image</Text>
+                </TouchableOpacity>
+            </View>
+        </ImageBackground>
     );
 };
 
 const styles = StyleSheet.create({
-     // YENİ: Arka plan stiline yönelik tanımlamalar
-     background: {
+    // YENİ: Arka plan stiline yönelik tanımlamalar
+    background: {
         flex: 1,
         resizeMode: 'cover', // Görselin ekranı tam kaplaması için
     },

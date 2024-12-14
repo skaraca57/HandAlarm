@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { View, FlatList, Text, StyleSheet, TouchableOpacity, ImageBackground } from 'react-native';
+import {
+    View,
+    FlatList,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ImageBackground,
+    Alert,
+} from 'react-native';
 import { RouteProp } from '@react-navigation/native';
 import { TabParamList, Alarm } from './navigationTypes';
+import { saveAlarms, loadAlarms } from './storageHelper';
 
 type AgendaScreenRouteProp = RouteProp<TabParamList, 'Agenda'>;
 
@@ -10,13 +19,42 @@ interface Props {
 }
 
 const AgendaScreen: React.FC<Props> = ({ route }) => {
-    const [alarms, setAlarms] = useState<Alarm[]>(route.params?.alarms || []);
+    const [alarms, setAlarms] = useState<Alarm[]>([]);
 
+    // Alarmları yükleme (ilk açılışta)
     useEffect(() => {
-        if (route.params?.alarms) {
-            setAlarms(route.params.alarms);
-        }
-    }, [route.params]);
+        const fetchAlarms = async () => {
+            const savedAlarms = await loadAlarms(); // Depodan alarmları yükle
+            setAlarms(savedAlarms || []);
+        };
+        fetchAlarms();
+    }, []);
+
+    // Alarmları kaydetme (her değişiklikte)
+    useEffect(() => {
+        saveAlarms(alarms); // Depoya kaydet
+    }, [alarms]);
+
+    // Alarm silme fonksiyonu
+    const deleteAlarm = (index: number) => {
+        Alert.alert(
+            'Delete Alarm',
+            'Are you sure you want to delete this alarm?',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: () => {
+                        const updatedAlarms = [...alarms];
+                        updatedAlarms.splice(index, 1); // Alarmı kaldır
+                        setAlarms(updatedAlarms);
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
 
     const renderAlarm = ({ item }: { item: Alarm }) => (
         <TouchableOpacity style={styles.alarmContainer}>
@@ -28,9 +66,9 @@ const AgendaScreen: React.FC<Props> = ({ route }) => {
 
     return (
         <ImageBackground
-        source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-121052.jpg' }} // Arka plan görseli
-        style={styles.background}
-    >
+            source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-121052.jpg' }} // Arka plan görseli
+            style={styles.background}
+        >
             <FlatList
                 data={alarms}
                 keyExtractor={(item, index) => index.toString()}
@@ -76,12 +114,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#7E4100FF', // Kahverengi ton
         marginBottom: 5,
-        fontWeight: 'bold', 
+        fontWeight: 'bold',
     },
     dateText: {
         fontSize: 16,
         color: '#7E4100FF', // Aynı renk ile tarih
-        fontWeight: 'bold', 
+        fontWeight: 'bold',
     },
     emptyContainer: {
         flex: 1,

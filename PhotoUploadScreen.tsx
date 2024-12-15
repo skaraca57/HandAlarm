@@ -8,7 +8,7 @@ const PhotoUploadScreen: React.FC = () => {
             if (response.assets && response.assets.length > 0) {
                 const image = response.assets[0];
                 console.log('Selected Image URI:', image.uri);
-                // İşleme devam edebilirsiniz.
+
             }
         });
     };

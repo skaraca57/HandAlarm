@@ -25,16 +25,15 @@ const App: React.FC = () => {
 
 
 
-  // Uygulama başladığında çalıştırılacak işlemler
   useEffect(() => {
-    // Depolanan galeriyi yükleme
+
     const fetchGallery = async () => {
       const savedGallery = await loadGallery();
       setGallery(savedGallery);
     };
     fetchGallery();
 
-    // Bildirim kanalı oluşturma (App başlatıldığında bir kez)
+
     PushNotification.createChannel(
       {
         channelId: 'test-alarm-channel',
@@ -42,8 +41,8 @@ const App: React.FC = () => {
         channelDescription: 'A channel for special notifications',
         importance: 4,
         vibrate: true,
-        playSound: true, // Ses çalma
-        soundName: 'default', // Varsayılan alarm sesi
+        playSound: true,
+        soundName: 'default',
       },
       (created) => console.log(`Channel created or already exists: ${created}`)
     );
@@ -71,7 +70,7 @@ const App: React.FC = () => {
     checkPermissions();
   }, []);
 
-  // Galeri güncellemelerini depolama
+
   useEffect(() => {
     saveGallery(gallery);
   }, [gallery]);
@@ -100,65 +99,65 @@ const App: React.FC = () => {
 
   return (
     <NavigationContainer>
-      {/* Sekme Navigasyonu Başlıyor */}
+      { }
       <Tab.Navigator
         screenOptions={{
-          // Sekme Tasarımı
+
           tabBarStyle: {
-            backgroundColor: '#FFFDD0', // Çubuğun arka plan rengi
-            height: 50, // Çubuğun yüksekliği artırıldı
-            justifyContent: 'center', // İçeriği ortalamak için
-          }, // Sekme çubuğu koyu gri
+            backgroundColor: '#FFFDD0',
+            height: 50,
+            justifyContent: 'center',
+          },
           tabBarLabelStyle: {
-            fontSize: 15, // Yazı boyutunu büyüttük
+            fontSize: 15,
             fontWeight: 'bold',
             color: '#7E4100FF',
-            textAlign: 'center', // Metni ortaladık
-          }, // Sekme yazıları
-          tabBarIndicatorStyle: { backgroundColor: '#7E4100FF', height: 3 }, // Aktif sekme alt çizgisi
-          tabBarInactiveTintColor: '#888', // Pasif sekme yazı rengi
-          tabBarActiveTintColor: '#7E4100FF', // Aktif sekme yazı rengi
+            textAlign: 'center',
+          },
+          tabBarIndicatorStyle: { backgroundColor: '#7E4100FF', height: 3 },
+          tabBarInactiveTintColor: '#888',
+          tabBarActiveTintColor: '#7E4100FF',
         }}
       >
-        {/* İlk Sekme: Upload */}
+        { }
         <Tab.Screen
           name="Upload"
-          component={FirstScreen} // FirstScreen bileşenini bağla
+          component={FirstScreen}
           options={{
-            tabBarLabel: 'Upload', // Sekmede görünen yazı
+            tabBarLabel: 'Upload',
           }}
         />
 
-        {/* İkinci Sekme: Processed */}
+        { }
         <Tab.Screen
           name="Processed"
           children={(props) => (
             <SecondScreen {...props} setGallery={setGallery} gallery={gallery} />
           )}
           options={{
-            tabBarLabel: 'Processed', // Sekme adı
+            tabBarLabel: 'Processed',
           }}
         />
 
-        {/* Üçüncü Sekme: Gallery */}
+        { }
         <Tab.Screen
           name="Gallery"
           children={(props) => (
             <GalleryScreen {...props} gallery={gallery} setGallery={setGallery} />
           )}
           options={{
-            tabBarLabel: 'Gallery', // Sekme adı
+            tabBarLabel: 'Gallery',
           }}
         />
 
-        {/* Dördüncü Sekme: Agenda */}
+        { }
         <Tab.Screen
           name="Agenda"
           component={AgendaScreen}
           options={{
-            tabBarLabel: 'Agenda', // Sekme adı
+            tabBarLabel: 'Agenda',
           }}
-          initialParams={{ alarms: [] }} // Varsayılan alarm listesi
+          initialParams={{ alarms: [] }}
         />
       </Tab.Navigator>
     </NavigationContainer>

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { PermissionsAndroid, Platform, View, Image, Text, StyleSheet, ScrollView, Alert, TouchableOpacity, ImageBackground } from 'react-native';
 import RNFS from 'react-native-fs';
 import PushNotification from 'react-native-push-notification';
-import { saveAlarms, loadAlarms } from './storageHelper'; // AsyncStorage fonksiyonlarını ekleyin
+import { saveAlarms, loadAlarms } from './storageHelper';
 
 
 
@@ -18,10 +18,8 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
 
     useEffect(() => {
         requestNotificationPermission();
+
     }, []);
-
-
-
 
 
     useEffect(() => {
@@ -29,9 +27,6 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
             processImage(imageUri);
         }
     }, [imageUri]);
-
-
-
 
 
     const requestNotificationPermission = async () => {
@@ -58,7 +53,7 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
     const processImage = async (uri) => {
         try {
             const base64Image = await RNFS.readFile(uri, 'base64');
-            const apiKey = 'AIzaSyDhJ5ywN5psJLw27O8LChB1oyVx0XCbzhY'; // Replace with your actual API key
+            const apiKey = 'AIzaSyDhJ5ywN5psJLw27O8LChB1oyVx0XCbzhY';
             const body = {
                 requests: [
                     {
@@ -89,7 +84,7 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
     };
 
     const validateAndExtract = (text) => {
-        // Regex that ignores spaces and possible separators
+
         const regex = /^\s*(.+?)\s*[\/|\-]?\s*(\d{1,2}[:\.]\d{2})\s*[\/|\-]?\s*(\d{2}\.\d{2}\.\d{4})\s*$/;
         const match = text.match(regex);
 
@@ -116,43 +111,54 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
                 return;
             }
 
-            // Yeni alarm objesi oluştur
             const newAlarm = {
-                id: `${Date.now()}`, // Benzersiz bir ID oluştur
+                id: `${Date.now()}`,
                 job: alarmData.job,
                 time: alarmData.time,
                 date: alarmData.date,
             };
 
-            // AsyncStorage'deki mevcut alarmları yükle
-            const currentAlarms = await loadAlarms();
-            const updatedAlarms = [...currentAlarms, newAlarm];
+            try {
+                const currentAlarms = await loadAlarms();
 
-            // Yeni alarm listesiyle AsyncStorage'ı güncelle
-            await saveAlarms(updatedAlarms);
+                const isDuplicate = currentAlarms.some(
+                    (alarm) => alarm.date === newAlarm.date && alarm.time === newAlarm.time
+                );
 
-            // Local state'i de güncelle
-            setAlarms(updatedAlarms);
+                if (isDuplicate) {
+                    Alert.alert('Duplicate Alarm', 'An alarm already exists for this time and date!');
+                    return;
+                }
 
-            PushNotification.localNotificationSchedule({
-                channelId: 'test-alarm-channel',
-                title: 'Scheduled Alarm',
-                message: `Your scheduled task "${newAlarm.job}" is now!`,
-                date: alarmTime,
-                allowWhileIdle: true,
-                playSound: true,
-                soundName: 'default',
-                vibrate: true,
-                vibration: 300,
-            });
+                const updatedAlarms = [...currentAlarms, newAlarm];
 
-            setGallery((prev) => [...prev, { uri: imageUri, date: new Date().toISOString() }]);
-            setAlarms((prev) => [...prev, alarmData]);
-            Alert.alert(
-                'Alarm Set',
-                `Task: ${alarmData.job}\nTime: ${alarmData.time}\nDate: ${alarmData.date}`
-            );
-            navigation.navigate('Agenda', { alarms: [...alarms, alarmData] });
+                await saveAlarms(updatedAlarms);
+
+                setAlarms(updatedAlarms);
+
+                PushNotification.localNotificationSchedule({
+                    channelId: 'test-alarm-channel',
+                    title: 'Scheduled Alarm',
+                    message: `Your scheduled task "${newAlarm.job}" is now!`,
+                    date: alarmTime,
+                    allowWhileIdle: true,
+                    playSound: true,
+                    soundName: 'default',
+                    vibrate: true,
+                    vibration: 300,
+                });
+                setGallery((prev) => [...prev, { uri: imageUri, date: new Date().toISOString() }]);
+                setAlarms((prev) => [...prev, alarmData]);
+                Alert.alert(
+                    'Alarm Set',
+                    `Task: ${alarmData.job}\nTime: ${alarmData.time}\nDate: ${alarmData.date}`
+                );
+
+                navigation.navigate('Agenda', { alarms: [...alarms, alarmData] });
+            } catch (error) {
+                console.error('Error while saving alarm:', error);
+                Alert.alert('Error', 'An error occurred while saving the alarm.');
+            }
         } else {
             Alert.alert(
                 'Invalid Format',
@@ -160,16 +166,17 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
             );
         }
     };
+
     const scheduleTestAlarm = () => {
         PushNotification.localNotificationSchedule({
             channelId: 'test-alarm-channel',
             title: 'Test Alarm',
             message: 'This is a test alarm!',
-            date: new Date(Date.now() + 5000), // 5 seconds later
+            date: new Date(Date.now() + 5000),
             allowWhileIdle: true,
             allowWhileIdle: true,
-            playSound: true, // Ses çalma
-            soundName: 'default', // Varsayılan alarm sesi
+            playSound: true,
+            soundName: 'default',
         });
 
         Alert.alert('Alarm Set', 'The test alarm will ring in 5 seconds.');
@@ -177,7 +184,7 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
 
     return (
         <ImageBackground
-            source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-120605.jpg' }} // Background görsel URL
+            source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-120605.jpg' }}
             style={styles.background}
         >
             <ScrollView contentContainerStyle={styles.container}>
@@ -203,20 +210,20 @@ const SecondScreen = ({ route, navigation, setGallery, gallery }) => {
 const styles = StyleSheet.create({
     background: {
         flex: 1,
-        resizeMode: 'cover', // Görsel ekranı kaplar
+        resizeMode: 'cover',
     },
     container: {
         flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // Arka plana hafif karartma efekti
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         padding: 16,
     },
     image: {
         width: 200,
         height: 200,
         marginBottom: 16,
-        borderRadius: 10, // Görselin kenarlarına yuvarlaklık
+        borderRadius: 10,
     },
     textContainer: {
         marginBottom: 20,
@@ -225,28 +232,28 @@ const styles = StyleSheet.create({
     loadingText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: '#FFFDD0', // Krem rengi
+        color: '#FFFDD0',
         textAlign: 'center',
     },
     detectedText: {
         fontSize: 16,
         fontWeight: 'normal',
-        color: '#FFFDD0', // Krem rengi
+        color: '#FFFDD0',
         textAlign: 'center',
     },
     button: {
-        backgroundColor: '#7E4100FF', // Buton rengi
+        backgroundColor: '#7E4100FF',
         paddingVertical: 15,
         paddingHorizontal: 40,
-        borderRadius: 30, // Yuvarlatılmış kenarlar
-        shadowColor: '#000', // Gölge efekti
+        borderRadius: 30,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 5 },
         shadowOpacity: 0.3,
         shadowRadius: 10,
         elevation: 5,
     },
     buttonText: {
-        color: '#FFFDD0', // Krem rengi
+        color: '#FFFDD0',
         fontSize: 20,
         fontWeight: 'bold',
     },

@@ -5,7 +5,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 
 const FirstScreen = ({ navigation }) => {
     const handleImageProcess = (imageUri) => {
-        navigation.navigate('Processed', { imageUri }); // "Processed" corresponds to SecondScreen
+        navigation.navigate('Processed', { imageUri });
     };
 
     const pickImage = () => {
@@ -14,7 +14,7 @@ const FirstScreen = ({ navigation }) => {
                 const image = response.assets[0];
                 console.log('Selected Image URI:', image.uri);
 
-                // After selecting the photo, navigate to SecondScreen
+
                 handleImageProcess(image.uri);
             } else if (response.didCancel) {
                 console.warn('User canceled the selection process.');
@@ -26,12 +26,12 @@ const FirstScreen = ({ navigation }) => {
 
     return (
         <ImageBackground
-            source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-120981.jpg' }} // Buraya istediğin bir görsel URL'sini koyabilirsin
+            source={{ uri: 'https://img.freepik.com/premium-photo/blank-clipboard-surrounded-by-stationery_640251-120981.jpg' }}
             style={styles.background}
         >
             <View style={styles.container}>
                 <Text style={styles.title}>Select and Recognize Image</Text>
-                {/* YENİ: TouchableOpacity ile özel bir buton tasarımı yapıldı */}
+                { }
                 <TouchableOpacity style={styles.button} onPress={pickImage}>
                     <Text style={styles.buttonText}>Select Image</Text>
                 </TouchableOpacity>
@@ -41,40 +41,40 @@ const FirstScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    // YENİ: Arka plan stiline yönelik tanımlamalar
+
     background: {
         flex: 1,
-        resizeMode: 'cover', // Görselin ekranı tam kaplaması için
+        resizeMode: 'cover',
     },
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)', // YENİ: Görselin üzerine hafif bir karartma efekti
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     title: {
-        fontSize: 28, // YENİ: Daha büyük ve modern başlık boyutu
+        fontSize: 28,
         fontWeight: 'bold',
-        color: '#FFFDD0', // YENİ: Yazı rengini pink yaptım
-        marginBottom: 30, // Daha fazla boşluk
-        textAlign: 'center', // Ortalanmış metin
+        color: '#FFFDD0',
+        marginBottom: 30,
+        textAlign: 'center',
     },
     button: {
-        // YENİ: Buton için özelleştirilmiş stil
-        backgroundColor: '#7E4100FF', // Mor buton rengi
-        paddingVertical: 15, // Dikey boşluk
-        paddingHorizontal: 40, // Yatay boşluk
-        borderRadius: 30, // Yuvarlatılmış köşeler
-        shadowColor: '#000', // Gölge efekti
+
+        backgroundColor: '#7E4100FF',
+        paddingVertical: 15,
+        paddingHorizontal: 40,
+        borderRadius: 30,
+        shadowColor: '#000',
         shadowOffset: { width: 0, height: 5 },
         shadowOpacity: 0.3,
         shadowRadius: 10,
-        elevation: 5, // Android'de gölge için
+        elevation: 5,
     },
     buttonText: {
-        // YENİ: Buton içindeki metin stili
+
         color: '#FFFDD0',
-        fontSize: 20, // Daha büyük yazı boyutu
+        fontSize: 20,
         fontWeight: 'bold',
     },
 });

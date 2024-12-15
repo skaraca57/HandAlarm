@@ -1,9 +1,9 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const GALLERY_KEY = 'gallery_key';
-const ALARMS_KEY = 'alarms_key'; // Yeni: Alarmlar için anahtar
+const ALARMS_KEY = 'alarms_key';
 
-// Galeriyi kaydet
+
 export const saveGallery = async (gallery) => {
     try {
         const jsonValue = JSON.stringify(gallery);
@@ -13,7 +13,7 @@ export const saveGallery = async (gallery) => {
     }
 };
 
-// Galeriyi yükle
+
 export const loadGallery = async () => {
     try {
         const jsonValue = await AsyncStorage.getItem(GALLERY_KEY);
@@ -24,7 +24,7 @@ export const loadGallery = async () => {
     }
 };
 
-// Alarmları kaydet
+
 export const saveAlarms = async (alarms) => {
     try {
         const jsonValue = JSON.stringify(alarms);
@@ -34,7 +34,7 @@ export const saveAlarms = async (alarms) => {
     }
 };
 
-// Alarmları yükle
+
 export const loadAlarms = async () => {
     try {
         const jsonValue = await AsyncStorage.getItem(ALARMS_KEY);

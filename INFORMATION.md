@@ -20,7 +20,7 @@ IMPORTANT IS " : "
 SPORT   15:50   12:12:2012
 <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
 
-<img src="./ScreenShots/Example.png" alt="Example" width="300px" height="auto" style="border-radius: 10px;" />
+<img src="./ScreenShots/Example.jpg" alt="Example" width="300px" height="auto" style="border-radius: 10px;" />
 
 
 </div>
@@ -30,7 +30,7 @@ SPORT   15:50   12:12:2012
 <img src="./ScreenShots/step1.png" alt="Step 1" width="200px" height="auto" style="border-radius: 10px;" />
 <img src="./ScreenShots/step2.png" alt="Step 2" width="200px" height="auto" style="border-radius: 10px;" />
 <img src="./ScreenShots/step3.png" alt="Step 3" width="200px" height="auto" style="border-radius: 10px;" />
-<img src="./ScreenShots/step4.png" alt="Step 4" width="200px" height="auto" style="border-radius: 10px;" />
+<img src="./ScreenShots/Step4.png" alt="Step 4" width="200px" height="auto" style="border-radius: 10px;" />
 
 
 </div>
